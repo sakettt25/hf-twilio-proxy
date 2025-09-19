@@ -1,31 +1,41 @@
-// index.js
 const express = require("express");
 const axios = require("axios");
 const FormData = require("form-data");
+const cors = require("cors");
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
+// Root GET route for browser
+app.get("/", (req, res) => {
+  res.send("HF-Twilio Proxy is running. Use POST /chat to interact.");
+});
+
+// Endpoint for Twilio to call
 app.post("/chat", async (req, res) => {
+  const { user_input, user_id } = req.body;
+
   try {
-    const { user_id, user_input } = req.body;
-
     const form = new FormData();
-    form.append("user_id", user_id || "test_user");
-    form.append("user_input", user_input || "Hello");
+    form.append("user_input", user_input);
+    form.append("user_id", user_id);
 
-    const response = await axios.post(
+    // Call Hugging Face Spaces API
+    const hfResponse = await axios.post(
       "https://ayanosenpai123-chatbot.hf.space/chat",
       form,
       { headers: form.getHeaders() }
     );
 
-    // Return HF response to Twilio
-    res.json(response.data);
+    res.json(hfResponse.data);
+
   } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ error: "Error fetching API response" });
+    console.error("HF Proxy Error:", err.message);
+    res.status(500).json({ error: "HF API call failed" });
   }
 });
 
-app.listen(3000, () => console.log("Proxy server running on port 3000"));
+// Start server
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(HF Proxy running on port ${port}));
