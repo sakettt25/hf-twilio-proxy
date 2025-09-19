@@ -38,4 +38,4 @@ app.post("/chat", async (req, res) => {
 
 // Start server
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(HF Proxy running on port ${port}));
+app.listen(port, () => console.log(`HF Proxy running on port ${port}`));
